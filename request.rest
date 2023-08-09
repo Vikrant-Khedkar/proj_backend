@@ -1,0 +1,6 @@
+POST 'http://localhost:3000/upload'
+Content-Type: 'application/json'
+{
+    "file": "C:/Users/vikra/Desktop/backend/test.txt",
+    "fileName":"test.txt"
+}
