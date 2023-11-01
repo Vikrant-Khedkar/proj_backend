@@ -11,8 +11,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 app.get('/', (req, res) => {
-  res.send('HI');
+  res.send('HI OM');
 });
+
+app.post('/')
 
 app.post('/upload', (req, res) => {
   const file = req.files.file;
