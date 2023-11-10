@@ -1,6 +1,16 @@
-POST 'http://localhost:3000/upload'
+POST 'http://localhost:5000/upload'
 Content-Type: 'application/json'
 {
     "file": "C:/Users/vikra/Desktop/backend/test.txt",
     "fileName":"test.txt"
 }
+POST 'http://localhost:5000/addPatient'
+Content-Type: 'application/json'
+{
+  "patientName": "John Doe",
+  "dob": "19900101",
+  "adhar": "123456789012",
+  "gender": "Male",
+  "insuranceId": "ABC123"
+}
+
