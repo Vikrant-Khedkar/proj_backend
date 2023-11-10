@@ -11,7 +11,9 @@ const multer = require("multer");
 const upload = multer({ dest: "./uploads/" });
 const app = express();
 
-// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true })); 
+app.use(express.json()); // Add this line to enable JSON body parsing
+
 // app.use(fileUpload());
 // let corsoptions = {
 //   origin:['http:localhost:3000'],
@@ -27,32 +29,38 @@ const web3 = new Web3("http://localhost:7545");
 //Get the ABI of the Contract which contains the methods and structures of the contract
 const contractAbi = require("./PatientRecords.json");
 //Address of the contract on blockchain
-const contractAddress = "0x1480cfd2112D5894352C10223365FeA94Fbc9062";
+const contractAddress = "0x0dB8896128b9f4aC606E961962A9Ad20bE3bA860";
 //create a contract instance
 const contract = new web3.eth.Contract(contractAbi.abi, contractAddress);
 
 //Address of the Sender from the Ganache Generated Accounts
-const senderAddress = "0x7d2A3CFd66373BeD7DA1f37Df9aCdBF822330a6a";
+const senderAddress = "0x9474FC4540090c90329A05759941e0834B3719E5";
 //Private Key of that account
 const privateKey =
-  "0x97018b879227f5c993440ed1d04f957a8e5aa2e7e925c2594d55b065be448c92";
+  "0x665b7baefeb7e57ddea57250eccd90aa02071e45968f8e1f1c4818af17c360b8";
 //Create account from the Address and PrivateKey
 const senderAccount = web3.eth.accounts.privateKeyToAccount(
   privateKey,
-  senderAddress
+  // senderAddress
 );
 //Add account to the wallet
 web3.eth.accounts.wallet.add(senderAccount);
 
 app.post("/addPatient", (req, res) => {
-  const patientName = req.body.patientName;
+  console.log(req.body)
+  const patientName = req.body.patientName
+  console.log(patientName)
+  console.log("Received patientName")
   const dob = req.body.dob;
   const adhar = req.body.adhar;
   const gender = req.body.gender;
   const insuranceId = req.body.insuranceId;
 
+  const data = [patientName, dob, adhar, gender, insuranceId];
+  console.log(data)
+
   contract.methods
-    .addPatient(patientName, dob, adhar, gender, insuranceId)
+    .addPatient(...data)
     .send({ from: senderAccount.address, gas: 2000000 })
     .on("transactionHash", (hash) => {
       console.log("Transaction Hash:", hash);
