@@ -5043,12 +5043,13 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x0a4CC4496C694c56B180860594d7EBD33fe1b502",
-      "transactionHash": "0x3aed344aa314747952f39b9b1b7b5f36e30a34676334c7173c1d63d8a637d302"
+      "address": "0xa88Cc6E22dEb3380Dcf38D49071ccd0E37AD73C6",
+      "transactionHash": "0x34ca07d59866240a848050c118446b13b19b77c7bf6d4ce8fa27ce8f4cf7ac15"
     }
   },
   "schemaVersion": "3.4.14",
-  "updatedAt": "2023-11-01T19:11:00.839Z",
+  "updatedAt": "2023-11-11T09:03:29.895Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

@@ -1,116 +1,14 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-// const fileUpload = require('express-fileupload');
-const fs = require("fs");
-const cors = require("cors");
-const axios = require("axios");
-const ipfsAPI = require("ipfs-api");
-const { Web3 } = require("web3");
-const ipfs = ipfsAPI("/ip4/127.0.0.1/tcp/5001");
-const multer = require("multer");
-const upload = multer({ dest: "./uploads/" });
+const routes = require("./routes");
+const corsMiddleware = require("./middleware/corsMiddleware");
+
 const app = express();
 
-// app.use(express.urlencoded({ extended: true })); 
-app.use(express.json()); // Add this line to enable JSON body parsing
+app.use(express.json());
+app.use(corsMiddleware);
+app.use("/", routes);
 
-// app.use(fileUpload());
-// let corsoptions = {
-//   origin:['http:localhost:3000'],
-// }
-app.use(cors());
-
-app.get("/", (req, res) => {
-  res.send("DHARTI🌏");
-});
-
-// Connect with the Ganache Blockchain Network
-const web3 = new Web3("http://localhost:7545");
-//Get the ABI of the Contract which contains the methods and structures of the contract
-const contractAbi = require("./PatientRecords.json");
-//Address of the contract on blockchain
-const contractAddress = "0x0dB8896128b9f4aC606E961962A9Ad20bE3bA860";
-//create a contract instance
-const contract = new web3.eth.Contract(contractAbi.abi, contractAddress);
-
-//Address of the Sender from the Ganache Generated Accounts
-const senderAddress = "0x9474FC4540090c90329A05759941e0834B3719E5";
-//Private Key of that account
-const privateKey =
-  "0x665b7baefeb7e57ddea57250eccd90aa02071e45968f8e1f1c4818af17c360b8";
-//Create account from the Address and PrivateKey
-const senderAccount = web3.eth.accounts.privateKeyToAccount(
-  privateKey,
-  // senderAddress
-);
-//Add account to the wallet
-web3.eth.accounts.wallet.add(senderAccount);
-
-app.post("/addPatient", (req, res) => {
-  console.log(req.body)
-  const patientName = req.body.patientName
-  console.log(patientName)
-  console.log("Received patientName")
-  const dob = req.body.dob;
-  const adhar = req.body.adhar;
-  const gender = req.body.gender;
-  const insuranceId = req.body.insuranceId;
-
-  const data = [patientName, dob, adhar, gender, insuranceId];
-  console.log(data)
-
-  contract.methods
-    .addPatient(...data)
-    .send({ from: senderAccount.address, gas: 2000000 })
-    .on("transactionHash", (hash) => {
-      console.log("Transaction Hash:", hash);
-    })
-    .on("receipt", (receipt) => {
-      console.log("Transaction Receipt:", receipt);
-    })
-    .on("error", (error) => {
-      console.error("Error:", error);
-    });
-  res.send("Added Patient✨");
-});
-
-//Api to upload files to IPFS
-app.post("/upload", upload.single("file"), async (req, res) => {
-  try {
-    const file = req.file;
-    console.log(file);
-    const fileName = "demo";
-    const fileStream = fs.createReadStream(file.path);
-
-    const fileAdded = await new Promise((resolve, reject) => {
-      const ipfsFileObj = {
-        path: fileName,
-        content: fileStream,
-      };
-
-      ipfs.add(ipfsFileObj, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-
-    fs.unlink(file.path, (err) => {
-      if (err) console.log(err);
-    });
-
-    const fileHash = fileAdded[0].hash;
-    const url = `ipfs://${fileHash}`;
-    res.send({ url, fileName, fileHash });
-    console.log(url, fileName, fileHash);
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.listen(5000, () => {
-  console.log("server is listening on port 5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
